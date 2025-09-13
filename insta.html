@@ -1,0 +1,683 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fafafa;
+            color: #262626;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 245px;
+            background: white;
+            border-right: 1px solid #dbdbdb;
+            position: fixed;
+            height: 100vh;
+            padding: 20px 0;
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 25px 24px;
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 16px;
+        }
+
+        .nav-item:hover {
+            background: #f5f5f5;
+        }
+
+        .nav-item.active {
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 16px;
+            fill: currentColor;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 245px;
+            flex: 1;
+            max-width: 935px;
+            padding: 30px 20px;
+        }
+
+        /* Stories Section */
+        .stories-container {
+            background: white;
+            border: 1px solid #dbdbdb;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+        }
+
+        .stories {
+            display: flex;
+            gap: 14px;
+            padding: 4px 0;
+        }
+
+        .story {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            min-width: 66px;
+        }
+
+        .story-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            padding: 2px;
+            margin-bottom: 6px;
+        }
+
+        .story-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+        }
+
+        .story-username {
+            font-size: 12px;
+            text-align: center;
+            max-width: 74px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Posts */
+        .post {
+            background: white;
+            border: 1px solid #dbdbdb;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            justify-content: space-between;
+        }
+
+        .post-user {
+            display: flex;
+            align-items: center;
+        }
+
+        .post-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+
+        .post-username {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .post-location {
+            font-size: 12px;
+            color: #8e8e8e;
+        }
+
+        .post-options {
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .post-image {
+            width: 100%;
+            max-height: 600px;
+            object-fit: cover;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 16px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            transition: opacity 0.2s;
+        }
+
+        .action-btn:hover {
+            opacity: 0.5;
+        }
+
+        .action-btn.liked {
+            color: #ed4956;
+        }
+
+        .post-likes {
+            padding: 0 16px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .post-caption {
+            padding: 0 16px;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .caption-username {
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .post-comments {
+            padding: 0 16px 16px;
+            font-size: 14px;
+            color: #8e8e8e;
+            cursor: pointer;
+        }
+
+        .post-time {
+            padding: 0 16px 16px;
+            font-size: 10px;
+            color: #8e8e8e;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+        }
+
+        /* Right Sidebar */
+        .right-sidebar {
+            width: 293px;
+            position: fixed;
+            right: 0;
+            top: 0;
+            height: 100vh;
+            padding: 30px 20px;
+            overflow-y: auto;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .user-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            margin-right: 16px;
+        }
+
+        .user-info h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .user-info p {
+            font-size: 14px;
+            color: #8e8e8e;
+        }
+
+        .suggestions {
+            margin-top: 24px;
+        }
+
+        .suggestions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .suggestions-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #8e8e8e;
+        }
+
+        .suggestion-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .suggestion-user {
+            display: flex;
+            align-items: center;
+        }
+
+        .suggestion-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+
+        .suggestion-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .suggestion-info p {
+            font-size: 12px;
+            color: #8e8e8e;
+        }
+
+        .follow-btn {
+            background: none;
+            border: none;
+            color: #0095f6;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .follow-btn:hover {
+            color: #00376b;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .right-sidebar {
+                display: none;
+            }
+            .main-content {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 72px;
+            }
+            .main-content {
+                margin-left: 72px;
+            }
+            .logo {
+                display: none;
+            }
+            .nav-item span {
+                display: none;
+            }
+            .nav-item {
+                justify-content: center;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">Instagram</div>
+            <div class="nav-item active">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path d="m9.005 16.545a2.997 2.997 0 0 1 2.997-2.997A2.997 2.997 0 0 1 15 16.545V22h7V12.5L12.5 2 2 12.5V22h7.005Z"/>
+                </svg>
+                <span>Home</span>
+            </div>
+            <div class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="m9 12 2 2 4-4"/>
+                </svg>
+                <span>Search</span>
+            </div>
+            <div class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                <span>Messages</span>
+            </div>
+            <div class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                    <path d="m13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                <span>Notifications</span>
+            </div>
+            <div class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <rect width="3" height="8" x="13" y="2" rx="1.5"/>
+                    <path d="M19 8.5V10h1.5A1.5 1.5 0 1 1 19 8.5"/>
+                    <rect width="3" height="8" x="8" y="14" rx="1.5"/>
+                    <path d="M5 15.5V14H3.5A1.5 1.5 0 1 1 5 15.5"/>
+                </svg>
+                <span>Create</span>
+            </div>
+            <div class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"/>
+                </svg>
+                <span>Profile</span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Stories -->
+            <div class="stories-container">
+                <div class="stories">
+                    <div class="story">
+                        <div class="story-avatar">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" alt="Your story">
+                        </div>
+                        <div class="story-username">Your story</div>
+                    </div>
+                    <div class="story">
+                        <div class="story-avatar">
+                            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=150&h=150&fit=crop&crop=face" alt="sarah_j">
+                        </div>
+                        <div class="story-username">sarah_j</div>
+                    </div>
+                    <div class="story">
+                        <div class="story-avatar">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="mike_photo">
+                        </div>
+                        <div class="story-username">mike_photo</div>
+                    </div>
+                    <div class="story">
+                        <div class="story-avatar">
+                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face" alt="emma_art">
+                        </div>
+                        <div class="story-username">emma_art</div>
+                    </div>
+                    <div class="story">
+                        <div class="story-avatar">
+                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face" alt="alex_travel">
+                        </div>
+                        <div class="story-username">alex_travel</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Posts -->
+            <div class="post">
+                <div class="post-header">
+                    <div class="post-user">
+                        <img class="post-avatar" src="https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=150&h=150&fit=crop&crop=face" alt="sarah_j">
+                        <div>
+                            <div class="post-username">sarah_j</div>
+                            <div class="post-location">New York, NY</div>
+                        </div>
+                    </div>
+                    <div class="post-options">•••</div>
+                </div>
+                <img class="post-image" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=800&fit=crop" alt="Beautiful sunset">
+                <div class="post-actions">
+                    <div class="action-buttons">
+                        <button class="action-btn like-btn" onclick="toggleLike(this)">❤️</button>
+                        <button class="action-btn">💬</button>
+                        <button class="action-btn">📤</button>
+                    </div>
+                    <button class="action-btn bookmark-btn" onclick="toggleBookmark(this)">🔖</button>
+                </div>
+                <div class="post-likes">1,234 likes</div>
+                <div class="post-caption">
+                    <span class="caption-username">sarah_j</span>
+                    Amazing sunset today! 🌅 #photography #sunset #nature
+                </div>
+                <div class="post-comments">View all 47 comments</div>
+                <div class="post-time">2 hours ago</div>
+            </div>
+
+            <div class="post">
+                <div class="post-header">
+                    <div class="post-user">
+                        <img class="post-avatar" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="mike_photo">
+                        <div>
+                            <div class="post-username">mike_photo</div>
+                            <div class="post-location">Los Angeles, CA</div>
+                        </div>
+                    </div>
+                    <div class="post-options">•••</div>
+                </div>
+                <img class="post-image" src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&h=800&fit=crop" alt="Mountain landscape">
+                <div class="post-actions">
+                    <div class="action-buttons">
+                        <button class="action-btn like-btn" onclick="toggleLike(this)">❤️</button>
+                        <button class="action-btn">💬</button>
+                        <button class="action-btn">📤</button>
+                    </div>
+                    <button class="action-btn bookmark-btn" onclick="toggleBookmark(this)">🔖</button>
+                </div>
+                <div class="post-likes">892 likes</div>
+                <div class="post-caption">
+                    <span class="caption-username">mike_photo</span>
+                    Perfect hiking day! 🏔️ #hiking #mountains #adventure #nature
+                </div>
+                <div class="post-comments">View all 23 comments</div>
+                <div class="post-time">5 hours ago</div>
+            </div>
+
+            <div class="post">
+                <div class="post-header">
+                    <div class="post-user">
+                        <img class="post-avatar" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face" alt="emma_art">
+                        <div>
+                            <div class="post-username">emma_art</div>
+                            <div class="post-location">Paris, France</div>
+                        </div>
+                    </div>
+                    <div class="post-options">•••</div>
+                </div>
+                <img class="post-image" src="https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=800&h=800&fit=crop" alt="Art supplies">
+                <div class="post-actions">
+                    <div class="action-buttons">
+                        <button class="action-btn like-btn" onclick="toggleLike(this)">❤️</button>
+                        <button class="action-btn">💬</button>
+                        <button class="action-btn">📤</button>
+                    </div>
+                    <button class="action-btn bookmark-btn" onclick="toggleBookmark(this)">🔖</button>
+                </div>
+                <div class="post-likes">567 likes</div>
+                <div class="post-caption">
+                    <span class="caption-username">emma_art</span>
+                    New painting in progress 🎨 #art #painting #creative #artwork
+                </div>
+                <div class="post-comments">View all 15 comments</div>
+                <div class="post-time">8 hours ago</div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="right-sidebar">
+            <div class="user-profile">
+                <img class="user-avatar" src="https://picsum.photos/150/150?random=1" alt="Your profile">
+                <div class="user-info">
+                    <h3>your_username</h3>
+                    <p>Your Name</p>
+                </div>
+            </div>
+
+            <div class="suggestions">
+                <div class="suggestions-header">
+                    <div class="suggestions-title">Suggestions For You</div>
+                    <button class="follow-btn">See All</button>
+                </div>
+                
+                <div class="suggestion-item">
+                    <div class="suggestion-user">
+                        <img class="suggestion-avatar" src="https://picsum.photos/150/150?random=14" alt="jenny_dev">
+                        <div class="suggestion-info">
+                            <h4>jenny_dev</h4>
+                            <p>Followed by sarah_j + 2 more</p>
+                        </div>
+                    </div>
+                    <button class="follow-btn">Follow</button>
+                </div>
+
+                <div class="suggestion-item">
+                    <div class="suggestion-user">
+                        <img class="suggestion-avatar" src="https://picsum.photos/150/150?random=15" alt="david_music">
+                        <div class="suggestion-info">
+                            <h4>david_music</h4>
+                            <p>Followed by mike_photo</p>
+                        </div>
+                    </div>
+                    <button class="follow-btn">Follow</button>
+                </div>
+
+                <div class="suggestion-item">
+                    <div class="suggestion-user">
+                        <img class="suggestion-avatar" src="https://picsum.photos/150/150?random=16" alt="lisa_fitness">
+                        <div class="suggestion-info">
+                            <h4>lisa_fitness</h4>
+                            <p>New to Instagram</p>
+                        </div>
+                    </div>
+                    <button class="follow-btn">Follow</button>
+                </div>
+
+                <div class="suggestion-item">
+                    <div class="suggestion-user">
+                        <img class="suggestion-avatar" src="https://picsum.photos/150/150?random=17" alt="chef_marco">
+                        <div class="suggestion-info">
+                            <h4>chef_marco</h4>
+                            <p>Followed by foodie_life</p>
+                        </div>
+                    </div>
+                    <button class="follow-btn">Follow</button>
+                </div>
+
+                <div class="suggestion-item">
+                    <div class="suggestion-user">
+                        <img class="suggestion-avatar" src="https://picsum.photos/150/150?random=18" alt="yoga_zen">
+                        <div class="suggestion-info">
+                            <h4>yoga_zen</h4>
+                            <p>Popular</p>
+                        </div>
+                    </div>
+                    <button class="follow-btn">Follow</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleLike(button) {
+            const post = button.closest('.post');
+            const likesElement = post.querySelector('.post-likes');
+            let likesText = likesElement.textContent;
+            let likesCount = parseInt(likesText.replace(/[^0-9]/g, ''));
+            
+            if (button.classList.contains('liked')) {
+                button.classList.remove('liked');
+                button.style.color = '';
+                likesCount--;
+                button.textContent = '❤️';
+            } else {
+                button.classList.add('liked');
+                button.style.color = '#ed4956';
+                likesCount++;
+                button.textContent = '❤️';
+            }
+            
+            likesElement.textContent = likesCount.toLocaleString() + ' likes';
+        }
+
+        function toggleBookmark(button) {
+            if (button.style.color === 'rgb(0, 149, 246)') {
+                button.style.color = '';
+            } else {
+                button.style.color = '#0095f6';
+            }
+        }
+
+        // Add some interactivity to navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Story click interaction
+        document.querySelectorAll('.story').forEach(story => {
+            story.addEventListener('click', function() {
+                const username = this.querySelector('.story-username').textContent;
+                alert(`Opening ${username}'s story!`);
+            });
+        });
+
+        // Follow button interaction
+        document.querySelectorAll('.follow-btn').forEach(btn => {
+            if (btn.textContent === 'Follow') {
+                btn.addEventListener('click', function() {
+                    if (this.textContent === 'Follow') {
+                        this.textContent = 'Following';
+                        this.style.color = '#8e8e8e';
+                    } else {
+                        this.textContent = 'Follow';
+                        this.style.color = '#0095f6';
+                    }
+                });
+            }
+        });
+
+        // Add scroll effects
+        window.addEventListener('scroll', function() {
+            const sidebar = document.querySelector('.sidebar');
+            if (window.scrollY > 0) {
+                sidebar.style.boxShadow = '0 0 10px rgba(0,0,0,0.1)';
+            } else {
+                sidebar.style.boxShadow = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
